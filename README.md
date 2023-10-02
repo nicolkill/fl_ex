@@ -62,7 +62,7 @@ Then create your Application module, this must have the previous server added to
 
 ```elixir
 defmodule MyApp.Application do
-  use Application
+  use Application, otp_app: :my_app
   
   @impl true
   def start(_type, _args) do
@@ -118,6 +118,22 @@ defmodule MyApp.Server do
   define_router MyApp.SomeRouter
 end
 ```
+
+## Configure
+
+You can configure your server in the `config/config.exs` file
+
+```elixir
+import Config
+
+config :fl_ex_example, FlEx.Server,
+  port: System.get_env("PORT"),
+  json_handler: Jason
+```
+
+| key | type | desc |
+|---|---|---|
+| port | :tring | server port |
 
 ## How to test
 
