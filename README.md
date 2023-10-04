@@ -32,9 +32,12 @@ First you need create a module that will be your server
 
 ```elixir
 defmodule MyApp.Server do
-  use FlEx.Server
+  use FlEx.Server, otp_app: :my_app
 
-  plug :accepts, ["json"]
+  plug Plug.Head
+  plug Plug.RequestId
+  plug Plug.Logger, log: :debug
+  plug FlEx.Plug.Accepts, ["json"]
   plug MyApp.Plugs.Auth
 
   # define directly your route 
@@ -46,8 +49,14 @@ defmodule MyApp.Server do
   # or define a scope of routes
 
   scope "/api/v1" do
+    # you can add your plugs that just will run on this scoped routes
+    plug MyApp.Plugs.Auth
+
     get "/your_page", &my_func/2
     get "/your_page", MyApp.SomeOtherModule, :function_name
+
+    # you can add exclusive plugs to just one route if you want
+    get "/your_page", MyApp.SomeOtherModule, :function_name, Plug.ExamplePlug, {Plug.OtherExamplePlug, [opts: 1]}
   end
 
   def my_func(conn, %{"param" => param} = _params) do
@@ -113,7 +122,7 @@ and add to the server module the next line
 ```elixir
 
 defmodule MyApp.Server do
-  use FlEx.Server
+  use FlEx.Server, otp_app: :my_app
 
   define_router MyApp.SomeRouter
 end
@@ -126,7 +135,7 @@ You can configure your server in the `config/config.exs` file
 ```elixir
 import Config
 
-config :fl_ex_example, FlEx.Server,
+config :fl_ex_example, MyApp.Server,
   port: System.get_env("PORT"),
   json_handler: Jason
 ```
@@ -137,4 +146,20 @@ config :fl_ex_example, FlEx.Server,
 
 ## How to test
 
-todo...
+You can test your server using the module `FlEx.ConnTest` sharing with key `endpoint` your implemented server
+
+```elixir
+defmodule FlExExample.ServerTest do
+  use FlEx.ConnTest, endpoint: FlExExample.Server
+
+  setup %{conn: conn} do
+    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  end
+
+  test "should work /your_page/:param", %{conn: conn} do
+    conn = get(conn, "/your_page/some_value")
+    assert %{"some_key" => _} = json_response(conn, 200)
+  end
+
+end
+```
