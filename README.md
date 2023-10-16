@@ -17,7 +17,7 @@ Also includes some useful plugs to create/configure your server quickly
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+If [available in Hex](https://hex.pm/packages/fl_ex), the package can be installed
 by adding `fl_ex` to your list of dependencies in `mix.exs`:
 
 ```elixir
