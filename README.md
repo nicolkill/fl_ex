@@ -10,6 +10,11 @@ This project doesn't pretend to replace Phoenix, the opposite we LOVE Phoenix an
 the use and implementation of Phoenix, but sometimes a lot of stuff it's too overkill for some very small servers and 
 more when you want to create a very small service
 
+The design it's based on [Plug](https://hexdocs.pm/plug/https.html) so it's FULLY COMPATIBLE WITH ALL THE PLUGS! and you
+can create your own plugs in the same format and the same way to use, 100% compatibility
+
+Also includes some useful plugs to create/configure your server quickly
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
@@ -22,6 +27,11 @@ def deps do
   ]
 end
 ```
+
+## The example
+
+This project includes a complete implementation example (server, routers, testing), just check the folder 
+[fl_ex_example](./fl_ex_example)
 
 ## Basic Usage
 
@@ -135,14 +145,15 @@ You can configure your server in the `config/config.exs` file
 ```elixir
 import Config
 
-config :fl_ex_example, MyApp.Server,
+config :fl_ex_example, FlEx.Server,
   port: System.get_env("PORT"),
   json_handler: Jason
 ```
 
-| key | type | desc |
-|---|---|---|
-| port | :tring | server port |
+| key | type | default | desc |
+|---|---|---|---|
+| port | :string | 4000 | server port |
+| json_handler | Module | [Jason](https://github.com/michalmuskala/jason) | The module that partses string to map and viseversa |
 
 ## How to test
 
@@ -163,3 +174,51 @@ defmodule FlExExample.ServerTest do
 
 end
 ```
+
+Or to test by "controllers" or routers, create your conn test module
+
+```elixir
+defmodule FlExExample.ConnTest do
+  defmacro __using__(_) do
+    quote do
+      use FlEx.ConnTest, endpoint: FlExExample.Server
+
+      setup %{conn: conn} do
+        {:ok, conn: put_req_header(conn, "accept", "application/json")}
+      end
+    end
+  end
+end
+```
+
+and just implement the module directly in your test
+
+```elixir
+defmodule FlExExample.ServerTest do
+  use FlExExample.ConnTest
+
+  test "should work /your_page/:param", %{conn: conn} do
+    conn = get(conn, "/your_page/some_value")
+    assert %{"some_key" => _} = json_response(conn, 200)
+  end
+
+end
+```
+
+## Roadmap
+
+- [x] Working
+- [ ] Live code changes
+- [ ] Render
+    - [x] JSON
+    - [ ] HTML
+- [x] Compatible with Plugs (100%)
+- [x] Plugs for whole router
+- [x] Plugs exclusive for `scope`
+- [ ] `pipeline` to create plug flows and refeer to `scope` or route
+- [x] Private plugs for specific routes
+- [ ] Testing
+    - [x] Basic json testing
+    - [ ] More helpers
+- [x] Server
+- [x] Separated routers

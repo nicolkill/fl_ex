@@ -14,8 +14,15 @@ defmodule FlExExample.ExampleController do
 
   def function_name_2(conn, %{"param" => param} = _params) do
     conn
-    |> FlEx.Renderer.status(201)
     |> FlEx.Renderer.json(%{some_key: "value of param is #{param}"})
+  end
+
+  def create(conn, params) do
+    IO.inspect(params, label: "post params")
+
+    conn
+    |> FlEx.Renderer.status(201)
+    |> FlEx.Renderer.json(%{message: "received params", params: params})
   end
 
 end

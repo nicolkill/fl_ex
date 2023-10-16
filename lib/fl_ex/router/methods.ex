@@ -58,7 +58,7 @@ defmodule FlEx.Router.Methods do
         [{plug, []}]
       {:plug, _, [plug, opts]} ->
         [{plug, opts}]
-      ignored_case ->
+      _ ->
         []
     end)
 
@@ -70,7 +70,7 @@ defmodule FlEx.Router.Methods do
           |> Enum.join("/")
           |> then(&("/#{&1}"))
         [{method, line, [new_sub_path, mod, func_name, pipelines ++ plugs]}]
-      ignored_case ->
+      _ ->
         []
     end)
 

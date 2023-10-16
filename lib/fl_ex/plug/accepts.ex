@@ -1,4 +1,8 @@
 defmodule FlEx.Plug.Accepts do
+  @moduledoc """
+
+  """
+
   import Plug.Conn
 
   def init(opts), do: opts

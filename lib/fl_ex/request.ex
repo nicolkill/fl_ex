@@ -20,30 +20,31 @@ defmodule FlEx.Server.Request do
 
       plug :handle_call
 
-      def handle_call(
-            %{
-              method: method,
-              request_path: path,
-              body_params: %Plug.Conn.Unfetched{aspect: :body_params}
-            } = conn,
-            _
-          ) do
-        {:ok, body, _} = Plug.Conn.read_body(conn)
-
-        body =
-          case body do
-            "" ->
-              %{}
-
-            body ->
-              body
-              |> String.replace("\n", "")
-              |> String.replace("\\", "")
-              |> decode!()
-          end
-
-        request(method, path, conn, body)
-      end
+#      def handle_call(
+#            %{
+#              method: method,
+#              request_path: path,
+#              body_params: %Plug.Conn.Unfetched{aspect: :body_params}
+#            } = conn,
+#            _
+#          ) do
+#
+#        {:ok, body, _} = Plug.Conn.read_body(conn)
+#
+#        body =
+#          case body do
+#            "" ->
+#              %{}
+#
+#            body ->
+#              body
+#              |> String.replace("\n", "")
+#              |> String.replace("\\", "")
+#              |> decode!()
+#          end
+#
+#        request(method, path, conn, body)
+#      end
 
       def handle_call(
             %{method: method, request_path: path, body_params: body_params, params: params} =

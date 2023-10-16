@@ -1,7 +1,7 @@
 defmodule FlExExample.Router do
   use FlEx.Router
 
-  plug FlEx.Plug.Accepts, ["application/json"]
+  plug FlEx.Plug.ApiRestJson
 
   get "/your_page/:param", FlExExample.ExampleController, :index
   get "/another_page/:param/more_complex/:param_2", :func
@@ -19,5 +19,7 @@ defmodule FlExExample.Router do
 
     get "/your_scoped_page", FlExExample.ExampleController, :function_name, FlEx.Plug.Accepts
     get "/your_scoped_page/:param", FlExExample.ExampleController, :function_name_2, {FlEx.Plug.Accepts, ["json"]}
+
+    post "/your_post", FlExExample.ExampleController, :create
   end
 end

@@ -10,4 +10,9 @@ defmodule FlExExample.ServerTest do
     assert %{"some_key" => _} = json_response(conn, 200)
   end
 
+  test "should work /api/v1/your_post", %{conn: conn} do
+    conn = post(conn, "/api/v1/your_post", %{key: "value"})
+    assert %{"message" => _} = json_response(conn, 201)
+  end
+
 end

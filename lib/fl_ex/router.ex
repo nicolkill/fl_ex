@@ -21,7 +21,10 @@ defmodule FlEx.Router do
           end
         end)
 
-        Plug.run(conn, pipeline)
+        conn
+        |> Plug.Conn.fetch_cookies()
+        |> Plug.Conn.fetch_query_params()
+        |> Plug.run(pipeline)
       end
     end
   end
