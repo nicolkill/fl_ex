@@ -5,12 +5,12 @@ defmodule FlEx.Plug.Logger do
 
   use Plug.Builder
 
-#  import Plug.Conn
+  #  import Plug.Conn
 
-  plug Plug.RequestId
+  plug(Plug.RequestId)
 
   if Mix.env() == :dev do
-    plug Plug.Logger, log: :debug
+    plug(Plug.Logger, log: :debug)
   end
 
   def init(opts), do: opts
@@ -18,5 +18,4 @@ defmodule FlEx.Plug.Logger do
   def call(conn, opts) do
     super(conn, opts)
   end
-
 end

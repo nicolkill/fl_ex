@@ -27,5 +27,4 @@ defmodule FlEx.Plug.PlugHandler do
       @plugs {unquote(plug), unquote(opts)}
     end
   end
-
 end

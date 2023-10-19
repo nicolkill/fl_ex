@@ -23,20 +23,21 @@ defmodule FlEx.Router do
       use FlEx.Plug.PlugHandler
 
       def init(opts),
-          do: opts
+        do: opts
 
       def call(conn, opts) do
-        pipeline = Enum.map(plugs(), fn {plug, opts} ->
-          try do
-            Module.split(plug)
-            {plug, opts}
-          rescue
-            _ ->
-              fn conn ->
-                apply(__MODULE__, plug, [conn, opts])
-              end
-          end
-        end)
+        pipeline =
+          Enum.map(plugs(), fn {plug, opts} ->
+            try do
+              Module.split(plug)
+              {plug, opts}
+            rescue
+              _ ->
+                fn conn ->
+                  apply(__MODULE__, plug, [conn, opts])
+                end
+            end
+          end)
 
         conn
         |> Plug.Conn.fetch_cookies()

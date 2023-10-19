@@ -7,16 +7,17 @@ defmodule FlEx.Plug.ApiRestJson do
 
   use Plug.Builder
 
-  plug Plug.Parsers,
-       parsers: [:urlencoded, :multipart, :json],
-       pass: ["*/*"],
-       json_decoder: Jason
-  plug Plug.MethodOverride
+  plug(Plug.Parsers,
+    parsers: [:urlencoded, :multipart, :json],
+    pass: ["*/*"],
+    json_decoder: Jason
+  )
+
+  plug(Plug.MethodOverride)
 
   def init(opts), do: opts
 
   def call(conn, opts) do
     super(conn, opts)
   end
-
 end

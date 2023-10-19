@@ -7,7 +7,7 @@ defmodule FlEx.Server.Cowboy do
 
   require Logger
 
-#  @spec specs()
+  #  @spec specs()
   def specs(otp_app, mod) do
     port =
       otp_app

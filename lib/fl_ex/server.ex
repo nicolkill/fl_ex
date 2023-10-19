@@ -36,9 +36,10 @@ defmodule FlEx.Server do
   defp server() do
     quote do
       use FlEx.Router
+
       use FlEx.Server.Request,
-          otp_app: @otp_app,
-          mod: __MODULE__
+        otp_app: @otp_app,
+        mod: __MODULE__
 
       import FlEx.Server
 
@@ -70,6 +71,7 @@ defmodule FlEx.Server do
 
   defmacro __before_compile__(env) do
     otp_app = Module.get_attribute(env.module, :otp_app)
+
     contents =
       quote do
         use FlEx.RendererFunctions, otp_app: unquote(otp_app)
@@ -88,7 +90,7 @@ defmodule FlEx.Server do
       """
       @spec routers() :: [module()]
       def routers(),
-          do: unquote(routers)
+        do: unquote(routers)
     end
   end
 

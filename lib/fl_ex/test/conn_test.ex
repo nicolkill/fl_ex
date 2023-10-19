@@ -24,18 +24,26 @@ defmodule FlEx.ConnTest do
 
   defmacro __using__(opts) do
     http_methods = [:get, :post, :put, :patch, :delete]
-    methods = Enum.map(http_methods, fn method ->
-      quote do
-        @doc """
-        Dispatches to the current endpoint.
 
-        See `dispatch/5` for more information.
-        """
-        def unquote(method)(conn, path_or_action, params_or_body \\ nil) do
-          FlEx.ConnTest.request(conn, unquote(opts[:endpoint]), unquote(method), path_or_action, params_or_body)
+    methods =
+      Enum.map(http_methods, fn method ->
+        quote do
+          @doc """
+          Dispatches to the current endpoint.
+
+          See `dispatch/5` for more information.
+          """
+          def unquote(method)(conn, path_or_action, params_or_body \\ nil) do
+            FlEx.ConnTest.request(
+              conn,
+              unquote(opts[:endpoint]),
+              unquote(method),
+              path_or_action,
+              params_or_body
+            )
+          end
         end
-      end
-    end)
+      end)
 
     quote do
       use ExUnit.Case, async: true
@@ -43,7 +51,7 @@ defmodule FlEx.ConnTest do
 
       import Plug.Conn
       import FlEx.ConnTest
-#      import FlEx.Test.Helpers
+      #      import FlEx.Test.Helpers
 
       setup _ do
         {:ok, conn: build_conn()}
@@ -56,7 +64,7 @@ defmodule FlEx.ConnTest do
   @doc """
   Creates a connection.
   """
-  @spec build_conn() :: Conn.t
+  @spec build_conn() :: Conn.t()
   def build_conn() do
     build_conn(:get, "/", nil)
   end
@@ -74,8 +82,9 @@ defmodule FlEx.ConnTest do
   """
   def request(%Plug.Conn{} = conn, endpoint, method, path_or_action, params_or_body) do
     if is_binary(params_or_body) and is_nil(List.keyfind(conn.req_headers, "content-type", 0)) do
-      raise ArgumentError, "a content-type header is required when setting " <>
-                           "a binary body in a test connection"
+      raise ArgumentError,
+            "a content-type header is required when setting " <>
+              "a binary body in a test connection"
     end
 
     conn
@@ -184,13 +193,15 @@ defmodule FlEx.ConnTest do
     case Plug.Conn.get_resp_header(conn, "content-type") do
       [] ->
         raise "no content-type was set, expected a #{format} response"
+
       [h] ->
         if response_content_type?(h, format) do
           h
         else
-          raise "expected content-type for #{format}, got: #{inspect h}"
+          raise "expected content-type for #{format}, got: #{inspect(h)}"
         end
-      [_|_] ->
+
+      [_ | _] ->
         raise "more than one content-type was set, expected a #{format} response"
     end
   end
@@ -199,9 +210,11 @@ defmodule FlEx.ConnTest do
     case parse_content_type(header) do
       {part, subpart} ->
         format = Atom.to_string(format)
+
         format in MIME.extensions(part <> "/" <> subpart) or
-        format == subpart or String.ends_with?(subpart, "+" <> format)
-      _  ->
+          format == subpart or String.ends_with?(subpart, "+" <> format)
+
+      _ ->
         false
     end
   end
@@ -210,6 +223,7 @@ defmodule FlEx.ConnTest do
     case Plug.Conn.Utils.content_type(header) do
       {:ok, part, subpart, _params} ->
         {part, subpart}
+
       _ ->
         false
     end
@@ -225,7 +239,7 @@ defmodule FlEx.ConnTest do
       assert "can't be blank" in body["errors"]
 
   """
-  @spec json_response(Conn.t, status :: integer | atom) :: term
+  @spec json_response(Conn.t(), status :: integer | atom) :: term
   def json_response(conn, status) do
     body = response(conn, status)
     _ = response_content_type(conn, :json)

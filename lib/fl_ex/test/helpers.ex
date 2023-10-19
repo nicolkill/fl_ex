@@ -50,13 +50,15 @@ defmodule FlEx.Test.Helpers do
     case Plug.Conn.get_resp_header(conn, "content-type") do
       [] ->
         raise "no content-type was set, expected a #{format} response"
+
       [h] ->
         if response_content_type?(h, format) do
           h
         else
-          raise "expected content-type for #{format}, got: #{inspect h}"
+          raise "expected content-type for #{format}, got: #{inspect(h)}"
         end
-      [_|_] ->
+
+      [_ | _] ->
         raise "more than one content-type was set, expected a #{format} response"
     end
   end
@@ -65,9 +67,11 @@ defmodule FlEx.Test.Helpers do
     case parse_content_type(header) do
       {part, subpart} ->
         format = Atom.to_string(format)
+
         format in MIME.extensions(part <> "/" <> subpart) or
-        format == subpart or String.ends_with?(subpart, "+" <> format)
-      _  ->
+          format == subpart or String.ends_with?(subpart, "+" <> format)
+
+      _ ->
         false
     end
   end
@@ -76,6 +80,7 @@ defmodule FlEx.Test.Helpers do
     case Plug.Conn.Utils.content_type(header) do
       {:ok, part, subpart, _params} ->
         {part, subpart}
+
       _ ->
         false
     end
@@ -91,12 +96,11 @@ defmodule FlEx.Test.Helpers do
       assert "can't be blank" in body["errors"]
 
   """
-  @spec json_response(Conn.t, status :: integer | atom) :: term
+  @spec json_response(Conn.t(), status :: integer | atom) :: term
   def json_response(conn, status) do
     body = response(conn, status)
     _ = response_content_type(conn, :json)
 
     FlEx.Renderer.json_handler().decode!(body)
   end
-
 end

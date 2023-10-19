@@ -11,18 +11,17 @@ defmodule FlEx.Server.Request do
 
   defmacro __using__(opts) do
     quote do
-
       @doc """
       Returns the main server module directly implemented
       """
       @spec server() :: module()
       def server(),
-          do: unquote(opts[:mod])
+        do: unquote(opts[:mod])
 
       @doc """
       Returns the configured `json_handler` in the config file or the default one
       """
-      @spec json_handler() ::  module()
+      @spec json_handler() :: module()
       def json_handler(),
         do:
           unquote(opts[:otp_app])
@@ -32,7 +31,7 @@ defmodule FlEx.Server.Request do
       defp encode!(data), do: json_handler().encode!(data)
       defp decode!(data), do: json_handler().decode!(data)
 
-      plug :handle_call
+      plug(:handle_call)
 
       @doc """
       Detects the right controller an runs the previous defined pipeline depending the route
@@ -55,17 +54,21 @@ defmodule FlEx.Server.Request do
               |> Enum.with_index()
 
             {valid?, params} =
-              Enum.reduce(route_split, {length(route_split) == length(structured_path) and route.method == method, %{}}, fn
-                {"", _}, {valid?, path_params} ->
-                  {valid?, path_params}
+              Enum.reduce(
+                route_split,
+                {length(route_split) == length(structured_path) and route.method == method, %{}},
+                fn
+                  {"", _}, {valid?, path_params} ->
+                    {valid?, path_params}
 
-                {":" <> token, index}, {valid?, path_params} ->
-                  value = Enum.at(structured_path, index)
-                  {valid?, Map.put(path_params, token, value)}
+                  {":" <> token, index}, {valid?, path_params} ->
+                    value = Enum.at(structured_path, index)
+                    {valid?, Map.put(path_params, token, value)}
 
-                {token, index}, {valid?, path_params} ->
-                  {valid? and token == Enum.at(structured_path, index), path_params}
-              end)
+                  {token, index}, {valid?, path_params} ->
+                    {valid? and token == Enum.at(structured_path, index), path_params}
+                end
+              )
 
             if valid?, do: [{route, params}], else: []
           end)
@@ -80,22 +83,23 @@ defmodule FlEx.Server.Request do
       end
 
       defp request(method, path, conn, params) do
-
         method =
           method
           |> String.downcase()
           |> String.to_atom()
+
         structured_path =
           String.split(path, "/")
 
         result =
           server()
-          |> then(&(&1.routers()))
+          |> then(& &1.routers())
           |> Enum.flat_map(&find_route(&1, method, structured_path))
 
         case result do
           [] ->
             Plug.Conn.send_resp(conn, 404, encode!(%{message: "route not found"}))
+
           [{router_mod, route, path_params}] ->
             do_request(router_mod, route, conn, Map.merge(params, path_params))
         end

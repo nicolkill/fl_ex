@@ -54,7 +54,7 @@ by adding `fl_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:fl_ex, "~> 0.1.1"}
+    {:fl_ex, "~> 0.1.2"}
   ]
 end
 ```
