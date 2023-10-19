@@ -61,10 +61,10 @@ end
 
 ## Index
 
-- [Basic Usage](./guides/basic_usage.md)
-- [Routing](./guides/routing.md)
-- [Configuration](./guides/configuration.md)
-- [Testing](./guides/testing.md)
+- [Basic Usage](guides/basic_usage.md)
+- [Routing](guides/routing.md)
+- [Configuration](guides/configuration.md)
+- [Testing](guides/testing.md)
 
 ## The example
 
