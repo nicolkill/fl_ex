@@ -62,19 +62,18 @@ defmodule FlEx.Router.Methods do
   @http_methods [:get, :post, :put, :patch, :delete]
 
   for method <- @http_methods do
-    @doc """
-    Adds the path to the route list under the http method call
+    quote do
+      @doc """
+      Adds the path to the route list under the http method call
 
-    Example:
+      Example:
 
-    ```
-      get "/your_scoped_page", FlExExample.ExampleController, :function_name
-      post "/your_scoped_page", FlExExample.ExampleController, :function_name
-      put "/your_scoped_page", FlExExample.ExampleController, :function_name
-      patch "/your_scoped_page", FlExExample.ExampleController, :function_name
-      delete "/your_scoped_page", FlExExample.ExampleController, :function_name
-    ```
-    """
+      ```
+        #{unquote(method)} "/your_scoped_page", :function_name
+        #{unquote(method)} "/your_scoped_page", FlExExample.ExampleController, :function_name
+      ```
+      """
+    end
     defmacro unquote(method)(path, module, function \\ [], pipeline \\ nil)
 
     defmacro unquote(method)(path, function, [], nil),
