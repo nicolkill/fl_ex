@@ -4,7 +4,7 @@ defmodule FlEx.MixProject do
   def project do
     [
       app: :fl_ex,
-      version: "0.1.2",
+      version: "0.1.3",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -17,7 +17,12 @@ defmodule FlEx.MixProject do
       docs: [
         extras: ["README.md"],
         groups_for_extras: [
-          Guides: Path.wildcard("guides/*.md")
+          Guides: [
+            "guides/basic_usage.md",
+            "guides/routing.md",
+            "guides/testing.md",
+            "guides/configuration.md"
+          ]
         ],
         groups_for_modules: [
           Core: [
