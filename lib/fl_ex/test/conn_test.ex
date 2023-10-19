@@ -1,4 +1,26 @@
 defmodule FlEx.ConnTest do
+  @moduledoc """
+  This module contains all the needed stuff to test your server and all the routers
+
+  Example:
+
+  ```elixir
+  defmodule Your.Server.ConnTest do
+    defmacro __using__(_) do
+      quote do
+        use FlEx.ConnTest, endpoint: Your.Server.Module
+
+        setup %{conn: conn} do
+          {:ok, conn: put_req_header(conn, "accept", "application/json")}
+        end
+      end
+    end
+  end
+  ```
+
+  and add the line `use Your.Server.ConnTest` to your test file
+
+  """
 
   defmacro __using__(opts) do
     http_methods = [:get, :post, :put, :patch, :delete]
@@ -21,6 +43,7 @@ defmodule FlEx.ConnTest do
 
       import Plug.Conn
       import FlEx.ConnTest
+#      import FlEx.Test.Helpers
 
       setup _ do
         {:ok, conn: build_conn()}
@@ -46,6 +69,9 @@ defmodule FlEx.ConnTest do
     Plug.Adapters.Test.Conn.conn(%Plug.Conn{}, method, path, params_or_body)
   end
 
+  @doc """
+  Dispatch a call to the server under the request parameters defined in params
+  """
   def request(%Plug.Conn{} = conn, endpoint, method, path_or_action, params_or_body) do
     if is_binary(params_or_body) and is_nil(List.keyfind(conn.req_headers, "content-type", 0)) do
       raise ArgumentError, "a content-type header is required when setting " <>
@@ -206,5 +232,4 @@ defmodule FlEx.ConnTest do
 
     FlEx.Renderer.json_handler().decode!(body)
   end
-
 end

@@ -1,4 +1,9 @@
 defmodule FlEx.Server.Request do
+  @moduledoc """
+  This module handles the Plug Cowboy http call, evaluating the request and redirecting to the right controller
+
+  > This module it's just for internal use, it's not necessary implement
+  """
 
   defmodule RouteNotFoundException do
     defexception message: "route not found"
@@ -6,9 +11,18 @@ defmodule FlEx.Server.Request do
 
   defmacro __using__(opts) do
     quote do
+
+      @doc """
+      Returns the main server module directly implemented
+      """
+      @spec server() :: module()
       def server(),
           do: unquote(opts[:mod])
 
+      @doc """
+      Returns the configured `json_handler` in the config file or the default one
+      """
+      @spec json_handler() ::  module()
       def json_handler(),
         do:
           unquote(opts[:otp_app])
@@ -20,32 +34,10 @@ defmodule FlEx.Server.Request do
 
       plug :handle_call
 
-#      def handle_call(
-#            %{
-#              method: method,
-#              request_path: path,
-#              body_params: %Plug.Conn.Unfetched{aspect: :body_params}
-#            } = conn,
-#            _
-#          ) do
-#
-#        {:ok, body, _} = Plug.Conn.read_body(conn)
-#
-#        body =
-#          case body do
-#            "" ->
-#              %{}
-#
-#            body ->
-#              body
-#              |> String.replace("\n", "")
-#              |> String.replace("\\", "")
-#              |> decode!()
-#          end
-#
-#        request(method, path, conn, body)
-#      end
-
+      @doc """
+      Detects the right controller an runs the previous defined pipeline depending the route
+      """
+      @spec handle_call(%Plug.Conn{}, map()) :: %Plug.Conn{}
       def handle_call(
             %{method: method, request_path: path, body_params: body_params, params: params} =
               conn,

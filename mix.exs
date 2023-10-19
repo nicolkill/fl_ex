@@ -4,7 +4,7 @@ defmodule FlEx.MixProject do
   def project do
     [
       app: :fl_ex,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -15,7 +15,32 @@ defmodule FlEx.MixProject do
       package: package(),
       source_url: "https://github.com/nicolkill/fl_ex",
       docs: [
-        extras: ["README.md"]
+        extras: ["README.md"],
+        groups_for_extras: [
+          "Guides": Path.wildcard("guides/*.md"),
+        ],
+        groups_for_modules: [
+          "Core": [
+            FlEx.Server,
+            FlEx.Router,
+            FlEx.RendererFunctions
+          ],
+          "Plugs": [
+            FlEx.Plug.ApiRestJson,
+            FlEx.Plug.Logger
+          ],
+          "Testing": [
+            FlEx.ConnTest,
+            FlEx.Test.Helpers
+          ],
+          "Internal use only": [
+            FlEx.Server.Request,
+            FlEx.Plug.PlugHandler,
+            FlEx.Router.Methods,
+            FlEx.Server.Supervisor,
+            FlEx.Server.Cowboy
+          ]
+        ]
       ]
     ]
   end

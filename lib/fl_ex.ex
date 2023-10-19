@@ -1,18 +1,5 @@
 defmodule FlEx do
   @moduledoc """
-  Documentation for `FlEx`.
+  This module it's in this moment just a representative module, nothing to use here keep reading
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> FlEx.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end

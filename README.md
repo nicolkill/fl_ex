@@ -15,6 +15,37 @@ can create your own plugs in the same format and the same way to use, 100% compa
 
 Also includes some useful plugs to create/configure your server quickly
 
+## Concepts
+
+#### Server
+
+All the concepts are just described, the examples are in the guides and the module docs
+
+The main piece it's the `server`, that contains the routes and the functions and this can be created using the module 
+`FlEx.Server` and this contains all the core to handle routes
+
+#### Routers
+Also it's not recommended have all in a single file so to divide the problem usin the routers, that can be created using
+the module `FlEx.Router` and this can handle in the same way the routes, actually, `FlEx.Server` it's a router itself
+
+#### Router Scopes
+
+In the router you can define scopes of route, this will add the scoped route to the defined inner route as a prefix of 
+the route, so if you have `/some/route` with the scope `/api/v1` the final route will be `/api/v1/some/route` and all 
+the defined routes in the scope will have the same route prefix
+
+#### Router pipelines
+
+The router can define plugs, and this will be added to the execution of every route, also you can define exclusive plugs
+in the scope and another exclusive plugs in every router
+
+#### Controller handling
+
+Defining a route include the route and the function to call when the route it's called, and this function can be defined
+in the same router, or an external module, the concept says that must be named "controller" and it is, but this library
+doesn't need implement a specific module for controllers, so you can just create your function in your module and just
+receive 2 parameters in the function (the connection and the parameters)
+
 ## Installation
 
 If [available in Hex](https://hex.pm/packages/fl_ex), the package can be installed
@@ -23,191 +54,28 @@ by adding `fl_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:fl_ex, "~> 0.1.0"}
+    {:fl_ex, "~> 0.1.1"}
   ]
 end
 ```
+
+## Index
+
+- [Basic Usage](./guides/basic_usage.md)
+- [Routing](./guides/routing.md)
+- [Configuration](./guides/configuration.md)
+- [Testing](./guides/testing.md)
 
 ## The example
 
 This project includes a complete implementation example (server, routers, testing), just check the folder 
 [fl_ex_example](./fl_ex_example)
 
-## Basic Usage
-
-> IMPORTANT! this implementation comes from the point from a empty project, if you have some of the files mentioned
-> just follow the line that says: `add to your file`
-
-First you need create a module that will be your server
-
-```elixir
-defmodule MyApp.Server do
-  use FlEx.Server, otp_app: :my_app
-
-  plug Plug.Head
-  plug Plug.RequestId
-  plug Plug.Logger, log: :debug
-  plug FlEx.Plug.Accepts, ["json"]
-  plug MyApp.Plugs.Auth
-
-  # define directly your route 
-  get "/your_page/:param", &my_func/2
-
-  # also you can define a function from other module
-  get "/your_page/:param", MyApp.SomeOtherModule, :function_name
-
-  # or define a scope of routes
-
-  scope "/api/v1" do
-    # you can add your plugs that just will run on this scoped routes
-    plug MyApp.Plugs.Auth
-
-    get "/your_page", &my_func/2
-    get "/your_page", MyApp.SomeOtherModule, :function_name
-
-    # you can add exclusive plugs to just one route if you want
-    get "/your_page", MyApp.SomeOtherModule, :function_name, Plug.ExamplePlug, {Plug.OtherExamplePlug, [opts: 1]}
-  end
-
-  def my_func(conn, %{"param" => param} = _params) do
-    conn
-    |> FlEx.Renderer.status(200)
-    |> FlEx.Renderer.json(%{some_key: "value of param is #{param}"})
-  end
-end
-```
-
-Then create your Application module, this must have the previous server added to the childer list
-
-```elixir
-defmodule MyApp.Application do
-  use Application, otp_app: :my_app
-  
-  @impl true
-  def start(_type, _args) do
-    # List all child processes to be supervised
-    children = [
-      MyApp.Server # add to your file
-    ]
-
-    opts = [strategy: :one_for_one, name: MyApp.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
-end
-```
-
-Then add your Application module to your application list to start in your `mix.exs` file, in case that this isn't done 
-yet
-
-```elixir
-  def application do
-    [
-      mod: {MyApp.Application, []},
-      extra_applications: [:logger]
-    ]
-  end
-```
-
-With this you have the basic server working now and you can start using it
-
-## Routes
-
-The `FlEx.Server` allows to define routes and plugs directly, but what if you want to define your routes in other places
-and just merge all the routes in the server, for this you need `FlEx.Router`
-
-```elixir
-defmodule MyApp.SomeRouter do
-  use FlEx.Router
-
-  plug :accepts, ["json"]
-
-  scope "/api/v1" do
-    get "/your_page", MyApp.SomeOtherModule, :function_name
-  end
-end
-```
-
-and add to the server module the next line
-
-```elixir
-
-defmodule MyApp.Server do
-  use FlEx.Server, otp_app: :my_app
-
-  define_router MyApp.SomeRouter
-end
-```
-
-## Configure
-
-You can configure your server in the `config/config.exs` file
-
-```elixir
-import Config
-
-config :fl_ex_example, FlEx.Server,
-  port: System.get_env("PORT"),
-  json_handler: Jason
-```
-
-| key | type | default | desc |
-|---|---|---|---|
-| port | :string | 4000 | server port |
-| json_handler | Module | [Jason](https://github.com/michalmuskala/jason) | The module that partses string to map and viseversa |
-
-## How to test
-
-You can test your server using the module `FlEx.ConnTest` sharing with key `endpoint` your implemented server
-
-```elixir
-defmodule FlExExample.ServerTest do
-  use FlEx.ConnTest, endpoint: FlExExample.Server
-
-  setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  end
-
-  test "should work /your_page/:param", %{conn: conn} do
-    conn = get(conn, "/your_page/some_value")
-    assert %{"some_key" => _} = json_response(conn, 200)
-  end
-
-end
-```
-
-Or to test by "controllers" or routers, create your conn test module
-
-```elixir
-defmodule FlExExample.ConnTest do
-  defmacro __using__(_) do
-    quote do
-      use FlEx.ConnTest, endpoint: FlExExample.Server
-
-      setup %{conn: conn} do
-        {:ok, conn: put_req_header(conn, "accept", "application/json")}
-      end
-    end
-  end
-end
-```
-
-and just implement the module directly in your test
-
-```elixir
-defmodule FlExExample.ServerTest do
-  use FlExExample.ConnTest
-
-  test "should work /your_page/:param", %{conn: conn} do
-    conn = get(conn, "/your_page/some_value")
-    assert %{"some_key" => _} = json_response(conn, 200)
-  end
-
-end
-```
-
 ## Roadmap
 
-- [x] Working
+- [x] Server
+- [x] Separated routers
+- [ ] Https
 - [ ] Live code changes
 - [ ] Render
     - [x] JSON
@@ -220,5 +88,3 @@ end
 - [ ] Testing
     - [x] Basic json testing
     - [ ] More helpers
-- [x] Server
-- [x] Separated routers

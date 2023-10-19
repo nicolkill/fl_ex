@@ -1,11 +1,11 @@
 defmodule FlEx.Plug.ApiRestJson do
   @moduledoc """
   All the required to have an json api rest
+
+  includes a body parser (json, multipart and form post), method override to use put/patch/delete and other http methods
   """
 
   use Plug.Builder
-
-#  import Plug.Conn
 
   plug Plug.Parsers,
        parsers: [:urlencoded, :multipart, :json],

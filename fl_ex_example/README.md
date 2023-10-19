@@ -1,21 +1,10 @@
 # FlExExample
 
-**TODO: Add description**
+This is a project example of the usage of `fl_ex` library
 
-## Installation
+Includes
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `fl_ex_example` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:fl_ex_example, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/fl_ex_example>.
-
+- [Server](./lib/server/server.ex)
+- [Router](./lib/server/router.ex)
+- [Some ontroller](./lib/server/controller/example_controller.ex)
+- [Test](./test/server_test.exs)

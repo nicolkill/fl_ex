@@ -15,7 +15,7 @@ defmodule FlExExample.Router do
   end
 
   scope "/api/v1" do
-    plug FlEx.Plug.Accepts, ["application/xml"]
+    plug FlEx.Plug.ApiRestJson
 
     get "/your_scoped_page", FlExExample.ExampleController, :function_name, FlEx.Plug.Accepts
     get "/your_scoped_page/:param", FlExExample.ExampleController, :function_name_2, {FlEx.Plug.Accepts, ["json"]}

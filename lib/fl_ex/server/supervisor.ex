@@ -1,6 +1,15 @@
 defmodule FlEx.Server.Supervisor do
+  @moduledoc """
+  The process supervisor for the server
+
+  > This module it's just for internal use, it's not necessary implement
+  """
+
   use Supervisor
 
+  @doc """
+  Starts the server
+  """
   def start_link(otp_app, mod, opts \\ []) do
     with {:ok, _pid} = ok <-
            Supervisor.start_link(__MODULE__, {otp_app, mod, opts}, name: __MODULE__) do

@@ -1,6 +1,6 @@
 defmodule FlEx.Plug.Logger do
   @moduledoc """
-  Pre-configured logger with some pressets depending the env
+  Pre-configured logger with some presets depending the env
   """
 
   use Plug.Builder

@@ -1,5 +1,10 @@
 defmodule FlEx.RendererFunctions do
-  @moduledoc false
+  @moduledoc """
+  All the render functions
+
+  > This module contains wont be used never, instead use the module `FlEx.Renderer` that will be created once compiled
+  the first time
+  """
 
   defmacro __using__(opts) do
     quote do
