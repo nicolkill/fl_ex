@@ -15,40 +15,45 @@ defmodule FlEx.MixProject do
       package: package(),
       source_url: "https://github.com/nicolkill/fl_ex",
       docs: [
+        extra_section: "GUIDES",
         extras: ["README.md"],
-        groups_for_extras: [
-          Guides: [
-            "guides/basic_usage.md",
-            "guides/routing.md",
-            "guides/testing.md",
-            "guides/configuration.md"
-          ]
-        ],
-        groups_for_modules: [
-          Core: [
-            FlEx.Server,
-            FlEx.Router,
-            FlEx.RendererFunctions
-          ],
-          Plugs: [
-            FlEx.Plug.ApiRestJson,
-            FlEx.Plug.Logger
-          ],
-          Testing: [
-            FlEx.ConnTest,
-            FlEx.Test.Helpers
-          ],
-          "Internal use only": [
-            FlEx.Server.Request,
-            FlEx.Plug.PlugHandler,
-            FlEx.Router.Methods,
-            FlEx.Server.Supervisor,
-            FlEx.Server.Cowboy
-          ]
-        ]
+        groups_for_extras: groups_for_extras(),
+        groups_for_modules: groups_for_modules()
       ]
     ]
   end
+
+  defp groups_for_extras(), do: [
+    Guides: [
+      "guides/basic_usage.md",
+      "guides/routing.md",
+      "guides/testing.md",
+      "guides/configuration.md"
+    ]
+  ]
+
+  defp groups_for_modules(), do: [
+    Core: [
+      FlEx.Server,
+      FlEx.Router,
+      FlEx.RendererFunctions
+    ],
+    Plugs: [
+      FlEx.Plug.ApiRestJson,
+      FlEx.Plug.Logger
+    ],
+    Testing: [
+      FlEx.ConnTest,
+      FlEx.Test.Helpers
+    ],
+    "Internal use only": [
+      FlEx.Server.Request,
+      FlEx.Plug.PlugHandler,
+      FlEx.Router.Methods,
+      FlEx.Server.Supervisor,
+      FlEx.Server.Cowboy
+    ]
+  ]
 
   # Run "mix help compile.app" to learn about applications.
   def application do
